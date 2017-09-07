@@ -12,6 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -51,6 +52,12 @@ public class ContactList extends ArrayAdapter<Contact> {
         Contact t = tContacts.get(position);
         contactName.setText(t.getName());
         contactNumber.setText(t.getNumber());
+        contactInvite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, "Invite This Contact!", Toast.LENGTH_SHORT).show();
+            }
+        });
         return vi;
     }
 
