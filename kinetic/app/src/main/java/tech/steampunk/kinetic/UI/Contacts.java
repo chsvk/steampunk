@@ -53,6 +53,7 @@ public class Contacts extends Activity  {
             name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)).trim();
 
             phonenumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)).trim();
+            phonenumber = phonenumber.replace(" ","");
 
             Contact t = new Contact(name,phonenumber);
             StoreContacts.add(t);
