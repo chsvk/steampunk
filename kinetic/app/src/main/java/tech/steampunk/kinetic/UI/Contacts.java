@@ -53,10 +53,23 @@ public class Contacts extends Activity  {
             name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)).trim();
 
             phonenumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)).trim();
-            phonenumber = phonenumber.replace(" ","");
+            phonenumber = phonenumber.replace(" ", "");
+            if (phonenumber.length() >= 10 && phonenumber.length() <= 13) {
+                if (phonenumber.startsWith("+91")) {
 
-            Contact t = new Contact(name,phonenumber);
-            StoreContacts.add(t);
+                } else {
+                    if (phonenumber.length() == 10) {
+                        phonenumber = "+91" + phonenumber;
+                    }
+                    if (phonenumber.length() == 11) {
+                        phonenumber = phonenumber.replaceFirst("0", "");
+                        phonenumber = "+91" + phonenumber;
+                    }
+                }
+
+                Contact t = new Contact(name, phonenumber);
+                StoreContacts.add(t);
+            }
         }
         hashSet.addAll(StoreContacts);
         StoreContacts.clear();
