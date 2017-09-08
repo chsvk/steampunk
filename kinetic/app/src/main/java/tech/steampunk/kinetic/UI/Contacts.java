@@ -2,10 +2,12 @@ package tech.steampunk.kinetic.UI;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -25,21 +27,26 @@ import tech.steampunk.kinetic.Adapters.ContactList;
 import tech.steampunk.kinetic.R;
 import tech.steampunk.kinetic.data.Contact;
 
-public class Contacts extends Activity  {
+public class Contacts extends AppCompatActivity  {
 
     private Cursor cursor;
     private String name;
     private String phonenumber;
     private List<Contact> StoreContacts;
-    @BindView(R.id.contactTest)TextView contactTest;
     private ContactList contactListAdapter;
     @BindView(R.id.contactList)ListView contactListView;
     private Set<Contact> hashSet;
+    private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
         ButterKnife.bind(this);
+        toolbar = (Toolbar)findViewById(R.id.contacts_activity_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Contacts");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         StoreContacts = new ArrayList<>();
         hashSet = new LinkedHashSet<>();
         fetchContacts();
@@ -76,6 +83,19 @@ public class Contacts extends Activity  {
         StoreContacts.addAll(hashSet);
         cursor.close();
         hasDuplicates(StoreContacts);
+        contactListAdapter = new ContactList(this,StoreContacts);
+        contactListView.setAdapter(contactListAdapter);
+        contactListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent in = new Intent(Contacts.this, ChatActivity.class);
+                Contact temp = StoreContacts.get(i);
+                in.putExtra("Name", temp.getName());
+                in.putExtra("Number", phonenumber);
+                startActivity(in);
+                Toast.makeText(Contacts.this, StoreContacts.get(i).getName().toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void hasDuplicates(List<Contact> contacts) {
@@ -92,18 +112,11 @@ public class Contacts extends Activity  {
                 usedNames.add(name);
             }
         }
-        setDisplay();
     }
 
-    public void setDisplay(){
-        contactListAdapter = new ContactList(this,StoreContacts);
-        contactListView.setAdapter(contactListAdapter);
-        contactListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(Contacts.this, StoreContacts.get(i).getName().toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
-
 }

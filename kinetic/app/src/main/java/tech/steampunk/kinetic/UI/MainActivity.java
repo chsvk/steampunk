@@ -22,7 +22,6 @@ import tech.steampunk.kinetic.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    private FirebaseAuth mAuth;
     private static final int READ_CONTACTS = 1;
     private android.support.v7.widget.Toolbar toolbar;
     private ViewPager viewPager;
@@ -46,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
                 new String[]{Manifest.permission.READ_CONTACTS},
                 READ_CONTACTS);
 
-        mAuth = FirebaseAuth.getInstance();
     }
 
     @Override

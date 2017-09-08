@@ -14,7 +14,7 @@ import tech.steampunk.kinetic.UI.GroupsFragment;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-    private String[] titles = {"Groups", "Chats", "Calls"};
+    private String[] titles = {"Extra", "Chats", "Calls"};
 
     public SectionsPagerAdapter(FragmentManager fm) {
         super(fm);

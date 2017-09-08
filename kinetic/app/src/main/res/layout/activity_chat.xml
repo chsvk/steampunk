@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="tech.steampunk.kinetic.UI.ChatActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include layout="@layout/app_bar_layout"
+            android:id="@+id/chat_activity_toolbar"/>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_weight="1"
+        android:id="@+id/conversation_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+
+
+        <LinearLayout
+            android:gravity="bottom"
+            android:layout_above="@+id/contactList"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal"
+            >
+
+            <EditText
+                android:layout_weight="4"
+                android:id="@+id/message_content"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Type Your Message.."
+                android:layout_marginLeft="9dp"
+                />
+
+            <ImageView
+                android:id="@+id/camera_intent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_camera"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="2dp"
+                />
+
+            <ImageView
+                android:id="@+id/send_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_send"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="4dp"/>
+
+        </LinearLayout>
+
+
+
+</LinearLayout>
