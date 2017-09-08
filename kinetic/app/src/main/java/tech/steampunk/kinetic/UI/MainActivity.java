@@ -23,7 +23,6 @@ import tech.steampunk.kinetic.R;
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    @BindView(R.id.fab)Button contacts;
     private static final int READ_CONTACTS = 1;
     private android.support.v7.widget.Toolbar toolbar;
     private ViewPager viewPager;
@@ -47,12 +46,6 @@ public class MainActivity extends AppCompatActivity {
                 new String[]{Manifest.permission.READ_CONTACTS},
                 READ_CONTACTS);
 
-        contacts.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, Contacts.class));
-            }
-        });
         mAuth = FirebaseAuth.getInstance();
     }
 
