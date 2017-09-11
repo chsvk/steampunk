@@ -6,54 +6,57 @@ package tech.steampunk.kinetic.data;
 
 public class Message {
 
-    private String message;
-    private String time;
-    private String type;
-    private String uid;
-
-    public Message(String message, String time, String type, String uid) {
-        this.message = message;
-        this.time = time;
-        this.type = type;
-        this.uid = uid;
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public Message(String message, String time, String uid) {
-
-        this.message = message;
-        this.time = time;
-        this.uid = uid;
-    }
+    private String Message;
+    private String Time;
+    private String Type;
+    private String UID;
 
     public String getMessage() {
-        return message;
+        return Message;
     }
 
     public void setMessage(String message) {
-        this.message = message;
+        Message = message;
     }
 
     public String getTime() {
-        return time;
+        return Time;
     }
 
     public void setTime(String time) {
-        this.time = time;
+        Time = time;
     }
 
     public String getType() {
-        return type;
+        return Type;
     }
 
     public void setType(String type) {
-        this.type = type;
+        Type = type;
+    }
+
+    public String getUID() {
+        return UID;
+    }
+
+    public void setUID(String UID) {
+        this.UID = UID;
+    }
+
+    public Message(String message, String time, String type, String UID) {
+        Message = message;
+        Time = time;
+        Type = type;
+        this.UID = UID;
+    }
+
+    public Message(String message, String time, String UID) {
+        Message = message;
+        Time = time;
+        this.UID = UID;
+    }
+
+    public Message(){
+
     }
 }

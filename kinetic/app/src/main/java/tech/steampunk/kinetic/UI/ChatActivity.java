@@ -17,8 +17,10 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -49,6 +51,7 @@ public class ChatActivity extends AppCompatActivity {
     private DatabaseReference messageDatabase;
     private DatabaseReference oMessageDatabase;
     private String UID;
+    private FirebaseRecyclerAdapter<Message, viewHolder> firebaseRecyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,11 +72,9 @@ public class ChatActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(name);
         messageDatabase = FirebaseDatabase.getInstance().getReference().child("Messages").child(UNumber).child(MNumber);
         oMessageDatabase = FirebaseDatabase.getInstance().getReference().child("Messages").child(MNumber).child(UNumber);
-        messageAdapter = new ConversationAdapter(conversation);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         conversation_list.setLayoutManager(mLayoutManager);
         conversation_list.setItemAnimator(new DefaultItemAnimator());
-        conversation_list.setAdapter(messageAdapter);
         loadMessages();
         send_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,10 +106,15 @@ public class ChatActivity extends AppCompatActivity {
                     messageDatabase.push().setValue(completeMessage);
                     oMessageDatabase.push().setValue(completeMessage);
                     conversation.add(t);
-                    messageAdapter.notifyDataSetChanged();
                 }
             }
         });
+        try {
+            messageDatabase.keepSynced(true);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void loadMessages() {
@@ -125,10 +131,42 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+        super.onStart();
         message.requestFocus();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-        super.onStart();
+        try {
+            firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Message, viewHolder>(
+                    Message.class, R.layout.single_message, viewHolder.class, messageDatabase
+
+            ) {
+                @Override
+                protected void populateViewHolder(viewHolder viewHolder, final Message model, int position) {
+                    viewHolder.msg(model);
+                }
+            };
+            conversation_list.setAdapter(firebaseRecyclerAdapter);
+            firebaseRecyclerAdapter.notifyDataSetChanged();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static class viewHolder extends RecyclerView.ViewHolder{
+
+        View view;
+        public viewHolder(View itemView) {
+            super(itemView);
+            view=itemView;
+        }
+
+        public void msg(Message msg){
+            TextView t=(TextView)view.findViewById(R.id.actual_message);
+            TextView time = (TextView)view.findViewById(R.id.message_time_stamp);
+            time.setText(msg.getTime());
+            t.setText(msg.getMessage());
+        }
     }
 
     @Override
