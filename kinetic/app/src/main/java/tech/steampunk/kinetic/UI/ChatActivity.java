@@ -3,9 +3,11 @@ package tech.steampunk.kinetic.UI;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,9 +19,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -37,6 +43,8 @@ public class ChatActivity extends AppCompatActivity {
     @BindView(R.id.conversation_list)RecyclerView conversation_list;
     private List<Message> conversation;
     private ConversationAdapter messageAdapter;
+    private DatabaseReference messageDatabase;
+    private String UID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +55,15 @@ public class ChatActivity extends AppCompatActivity {
         toolbar = (Toolbar)findViewById(R.id.chat_activity_toolbar);
         Intent in = getIntent();
         String name = in.getStringExtra("Name");
+        SharedPreferences preferences = getSharedPreferences("AUTH", MODE_PRIVATE);
+        UID = preferences.getString("UID","Default UID");
+        final String UNumber = preferences.getString("Number", "Default_User");
+        final String MNumber = in.getStringExtra("Number");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle(name);
+        messageDatabase = FirebaseDatabase.getInstance().getReference().child("Messages").child(UNumber).child(MNumber);
         messageAdapter = new ConversationAdapter(conversation);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         conversation_list.setLayoutManager(mLayoutManager);
@@ -69,8 +82,21 @@ public class ChatActivity extends AppCompatActivity {
                     int minutes = calendar.get(Calendar.MINUTE);
                     int seconds = calendar.get(Calendar.SECOND);
                     String newTime = hours + ":" + minutes;
-                    Message t= new Message(message.getText().toString().trim(), newTime);
+                    Message t= new Message(message.getText().toString().trim(), newTime, UID);
                     message.setText("");
+                    HashMap<String, String> completeMessage = new HashMap<>();
+                    completeMessage.put("Sender", UNumber);
+                    completeMessage.put("Reciever", MNumber);
+                    completeMessage.put("Message", t.getMessage());
+                    completeMessage.put("UID", UID);
+                    completeMessage.put("Time", newTime);
+                    if(t.getType()!=null){
+                        completeMessage.put("Type", t.getType());
+                    }else{
+                        completeMessage.put("Type", "Message");
+                    }
+
+                    messageDatabase.push().setValue(completeMessage);
                     conversation.add(t);
                     messageAdapter.notifyDataSetChanged();
                 }

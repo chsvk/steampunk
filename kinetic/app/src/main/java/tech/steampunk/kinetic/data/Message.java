@@ -9,16 +9,28 @@ public class Message {
     private String message;
     private String time;
     private String type;
+    private String uid;
 
-    public Message(String message, String time, String type) {
+    public Message(String message, String time, String type, String uid) {
         this.message = message;
         this.time = time;
         this.type = type;
+        this.uid = uid;
     }
 
-    public Message(String message, String time) {
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public Message(String message, String time, String uid) {
+
         this.message = message;
         this.time = time;
+        this.uid = uid;
     }
 
     public String getMessage() {

@@ -3,6 +3,7 @@ package tech.steampunk.kinetic.UI;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,6 +41,7 @@ public class Contacts extends AppCompatActivity  {
     @BindView(R.id.contactList)ListView contactListView;
     private Set<Contact> hashSet;
     private Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +96,7 @@ public class Contacts extends AppCompatActivity  {
                 Intent in = new Intent(Contacts.this, ChatActivity.class);
                 Contact temp = StoreContacts.get(i);
                 in.putExtra("Name", temp.getName());
-                in.putExtra("Number", phonenumber);
+                in.putExtra("Number", temp.getNumber());
                 startActivity(in);
                 Toast.makeText(Contacts.this, StoreContacts.get(i).getName().toString(), Toast.LENGTH_SHORT).show();
             }

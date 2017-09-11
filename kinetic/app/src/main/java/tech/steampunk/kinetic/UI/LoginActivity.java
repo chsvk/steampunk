@@ -1,10 +1,13 @@
 package tech.steampunk.kinetic.UI;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -43,6 +46,8 @@ public class LoginActivity extends Activity {
             public void onClick(View view) {
                 if(login.getText().toString().isEmpty()||Password.getText().toString().isEmpty()){
                     Toast.makeText(LoginActivity.this, "Please Fill The Required Fields", Toast.LENGTH_SHORT).show();
+                }else if(login.getText().toString().trim().length()<10 || login.getText().toString().trim().length()>10){
+                    Toast.makeText(LoginActivity.this, "Please Enter a Valid Number!", Toast.LENGTH_SHORT).show();
                 }else{
                     String l = login.getText().toString().trim() + "@kinetic.com";
                     mAuth.createUserWithEmailAndPassword(l,Password.getText().toString())
@@ -55,7 +60,7 @@ public class LoginActivity extends Activity {
                                         mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
                                         HashMap<String, String> userMap = new HashMap<>();
                                         userMap.put("Name", "Default");
-                                        userMap.put("Number", "+91" + String.valueOf(login).trim());
+                                        userMap.put("Number", "+91" + login.getText().toString().trim());
                                         userMap.put("Status", "On The Move, Its Kinetic!");
                                         userMap.put("DP", "Default_URL");
                                         userMap.put("ThumbNail", "Default_Thumb");
@@ -64,6 +69,11 @@ public class LoginActivity extends Activity {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if(task.isSuccessful()){
+                                                    SharedPreferences.Editor editor = getSharedPreferences("AUTH", MODE_PRIVATE).edit();
+                                                    editor.putString("Number", "+91" + login.getText().toString().trim());
+                                                    editor.putString("UID",mAuth.getCurrentUser().getUid());
+                                                    editor.putString("Status", "On The Move, Its Kinetic!");
+                                                    editor.apply();
                                                     Toast.makeText(LoginActivity.this, "Registration Successful!", Toast.LENGTH_SHORT).show();
                                                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                                     finish();
@@ -83,5 +93,13 @@ public class LoginActivity extends Activity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        login.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        super.onStart();
     }
 }

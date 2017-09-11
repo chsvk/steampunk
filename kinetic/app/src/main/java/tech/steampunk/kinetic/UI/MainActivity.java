@@ -8,8 +8,13 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Switch;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -54,5 +59,29 @@ public class MainActivity extends AppCompatActivity {
         if(user==null){
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+
+            case R.id.LogOut:
+                FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                mAuth.signOut();
+                Toast.makeText(MainActivity.this, "Logged Out", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MainActivity.this, MainActivity.class));
+                finish();
+                return true;
+
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
