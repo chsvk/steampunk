@@ -19,6 +19,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -44,6 +47,7 @@ public class ChatActivity extends AppCompatActivity {
     private List<Message> conversation;
     private ConversationAdapter messageAdapter;
     private DatabaseReference messageDatabase;
+    private DatabaseReference oMessageDatabase;
     private String UID;
 
     @Override
@@ -64,11 +68,13 @@ public class ChatActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle(name);
         messageDatabase = FirebaseDatabase.getInstance().getReference().child("Messages").child(UNumber).child(MNumber);
+        oMessageDatabase = FirebaseDatabase.getInstance().getReference().child("Messages").child(MNumber).child(UNumber);
         messageAdapter = new ConversationAdapter(conversation);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         conversation_list.setLayoutManager(mLayoutManager);
         conversation_list.setItemAnimator(new DefaultItemAnimator());
         conversation_list.setAdapter(messageAdapter);
+        loadMessages();
         send_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,11 +103,18 @@ public class ChatActivity extends AppCompatActivity {
                     }
 
                     messageDatabase.push().setValue(completeMessage);
+                    oMessageDatabase.push().setValue(completeMessage);
                     conversation.add(t);
                     messageAdapter.notifyDataSetChanged();
                 }
             }
         });
+    }
+
+    private void loadMessages() {
+
+
+
     }
 
     @Override
