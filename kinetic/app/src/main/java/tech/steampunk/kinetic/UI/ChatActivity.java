@@ -1,18 +1,15 @@
 package tech.steampunk.kinetic.UI;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.provider.ContactsContract;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -26,6 +23,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -50,7 +48,7 @@ public class ChatActivity extends AppCompatActivity {
     private ConversationAdapter messageAdapter;
     private DatabaseReference messageDatabase;
     private DatabaseReference oMessageDatabase;
-    private String UID;
+    public static String UID;
     private FirebaseRecyclerAdapter<Message, viewHolder> firebaseRecyclerAdapter;
 
     @Override
@@ -72,10 +70,11 @@ public class ChatActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(name);
         messageDatabase = FirebaseDatabase.getInstance().getReference().child("Messages").child(UNumber).child(MNumber);
         oMessageDatabase = FirebaseDatabase.getInstance().getReference().child("Messages").child(MNumber).child(UNumber);
+        messageAdapter = new ConversationAdapter(conversation);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         conversation_list.setLayoutManager(mLayoutManager);
         conversation_list.setItemAnimator(new DefaultItemAnimator());
-        loadMessages();
+        conversation_list.setAdapter(messageAdapter);
         send_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,7 +104,9 @@ public class ChatActivity extends AppCompatActivity {
 
                     messageDatabase.push().setValue(completeMessage);
                     oMessageDatabase.push().setValue(completeMessage);
+                    firebaseRecyclerAdapter.notifyDataSetChanged();
                     conversation.add(t);
+                    messageAdapter.notifyDataSetChanged();
                 }
             }
         });
@@ -117,11 +118,7 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    private void loadMessages() {
 
-
-
-    }
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -162,10 +159,25 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         public void msg(Message msg){
-            TextView t=(TextView)view.findViewById(R.id.actual_message);
-            TextView time = (TextView)view.findViewById(R.id.message_time_stamp);
-            time.setText(msg.getTime());
-            t.setText(msg.getMessage());
+
+            TextView myMessage=(TextView)view.findViewById(R.id.actual_message);
+            TextView mytime = (TextView)view.findViewById(R.id.message_time_stamp);
+            TextView RMessage = (TextView)view.findViewById(R.id.Ractual_message);
+            TextView RmyTime = (TextView)view.findViewById(R.id.Rmessage_time_stamp);
+            CardView myCard = (CardView)view.findViewById(R.id.single_message_card);
+            CardView RCard = (CardView)view.findViewById(R.id.Rsingle_message_card);
+            if(UID == msg.getUID().trim()){
+                myCard.setVisibility(View.GONE);
+                RCard.setVisibility(View.VISIBLE);
+                RMessage.setText(msg.getMessage());
+                RmyTime.setText(msg.getTime());
+            }else {
+               RCard.setVisibility(View.GONE);
+                myCard.setVisibility(View.VISIBLE);
+                myMessage.setText(msg.getMessage());
+                mytime.setText(msg.getTime());
+            }
+
         }
     }
 
