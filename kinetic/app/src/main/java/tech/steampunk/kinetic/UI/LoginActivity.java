@@ -18,8 +18,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 
@@ -32,8 +35,10 @@ public class LoginActivity extends Activity {
     @BindView(R.id.Login) EditText login;
     @BindView(R.id.Password)EditText Password;
     @BindView(R.id.Register) Button Register;
+    @BindView(R.id.Login_Button)Button Login_Button;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
+    private DatabaseReference mAuthReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +46,34 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         mAuth = FirebaseAuth.getInstance();
+        mAuthReference = FirebaseDatabase.getInstance().getReference().child("Users");
+        Login_Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(login.getText().toString().isEmpty()||Password.getText().toString().isEmpty()){
+                    Toast.makeText(LoginActivity.this, "Please Fill The Required Fields", Toast.LENGTH_SHORT).show();
+                }else if(login.getText().toString().trim().length()<10 || login.getText().toString().trim().length()>10){
+                    Toast.makeText(LoginActivity.this, "Please Enter a Valid Number!", Toast.LENGTH_SHORT).show();
+                }else {
+                    String l = login.getText().toString().trim() + "@kinetic.com";
+                    mAuth.signInWithEmailAndPassword(l,Password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if(task.isSuccessful()){
+                                SharedPreferences.Editor editor = getSharedPreferences("AUTH", MODE_PRIVATE).edit();
+                                editor.putString("Number", "+91" + login.getText().toString().trim());
+                                editor.putString("UID",mAuth.getCurrentUser().getUid());
+                                editor.putString("Status", "On The Move, Its Kinetic!");
+                                editor.apply();
+                                Toast.makeText(LoginActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                                finish();
+                            }
+                        }
+                    });
+                }
+            }
+        });
         Register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -57,7 +90,7 @@ public class LoginActivity extends Activity {
                                     if(task.isSuccessful()){
                                         FirebaseUser user = mAuth.getCurrentUser();
                                         String uid = user.getUid();
-                                        mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
+                                        mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child( "+91" + login.getText().toString().trim());
                                         HashMap<String, String> userMap = new HashMap<>();
                                         userMap.put("Name", "Default");
                                         userMap.put("Number", "+91" + login.getText().toString().trim());
@@ -65,6 +98,7 @@ public class LoginActivity extends Activity {
                                         userMap.put("DP", "Default_URL");
                                         userMap.put("ThumbNail", "Default_Thumb");
                                         userMap.put("Birthday", "Default");
+                                        userMap.put("UID", uid);
                                         mDatabase.setValue(userMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
@@ -94,6 +128,7 @@ public class LoginActivity extends Activity {
             }
         });
     }
+
 
     @Override
     protected void onStart() {
