@@ -31,25 +31,19 @@
 
 
     <EditText
-        android:layout_marginLeft="70dp"
+        android:layout_marginLeft="60dp"
         android:id="@+id/Password"
         android:layout_width="300dp"
         android:layout_height="60dp"
-        android:hint="PASSWORD"/>
+        android:hint="PASSWORD"
+        android:inputType="textPassword"/>
 
     <Button
         android:id="@+id/Register"
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:text="SIGNUP"/>
+        android:text="SIGNUP/LOGIN"/>
 
-    <Button
-        android:id="@+id/Login_Button"
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="LOGIN "
-        android:inputType="textPassword"/>
 
 </LinearLayout>

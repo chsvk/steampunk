@@ -1,7 +1,6 @@
 package tech.steampunk.kinetic.UI;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -11,16 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Switch;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import tech.steampunk.kinetic.Adapters.SectionsPagerAdapter;
 import tech.steampunk.kinetic.R;
@@ -38,18 +32,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        toolbar = (android.support.v7.widget.Toolbar)findViewById(R.id.main_toolbar);
+        toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Kinetic");
-        tabLayout = (TabLayout)findViewById(R.id.main_tabs);
-        viewPager = (ViewPager)findViewById(R.id.ViewPager);
+        tabLayout = findViewById(R.id.main_tabs);
+        viewPager = findViewById(R.id.ViewPager);
         sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(sectionsPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         ActivityCompat.requestPermissions(MainActivity.this,
                 new String[]{Manifest.permission.READ_CONTACTS},
                 READ_CONTACTS);
-
+        viewPager.setCurrentItem(1);
     }
 
     @Override

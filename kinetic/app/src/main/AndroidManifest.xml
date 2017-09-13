@@ -22,10 +22,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".UI.LoginActivity" />
-        <activity android:name=".UI.Contacts"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        <activity android:name=".UI.ChatActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+        <activity
+            android:name=".UI.Contacts"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
+            android:name=".UI.ChatActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity android:name=".UI.AccountActivity"></activity>
     </application>
 
 </manifest>

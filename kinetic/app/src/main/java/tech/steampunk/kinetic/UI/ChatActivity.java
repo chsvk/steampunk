@@ -44,6 +44,7 @@ public class ChatActivity extends AppCompatActivity {
     private ConversationAdapter messageAdapter;
     private DatabaseReference messageDatabase;
     private DatabaseReference oMessageDatabase;
+    private DatabaseReference chatsReference;
     public static String UID;
     private FirebaseRecyclerAdapter<Message, viewHolder> firebaseRecyclerAdapter;
 
@@ -53,7 +54,7 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
         conversation = new ArrayList<>();
-        toolbar = (Toolbar)findViewById(R.id.chat_activity_toolbar);
+        toolbar = findViewById(R.id.chat_activity_toolbar);
         Intent in = getIntent();
         String name = in.getStringExtra("Name");
         SharedPreferences preferences = getSharedPreferences("AUTH", MODE_PRIVATE);
@@ -64,13 +65,12 @@ public class ChatActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle(name);
-        messageDatabase = FirebaseDatabase.getInstance().getReference().child("Messages").child(UNumber).child(MNumber);
-        oMessageDatabase = FirebaseDatabase.getInstance().getReference().child("Messages").child(MNumber).child(UNumber);
-        messageAdapter = new ConversationAdapter(conversation);
+        messageDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(UNumber).child("Messages").child(MNumber);
+        oMessageDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(MNumber).child("Messages").child(UNumber);
+        chatsReference = FirebaseDatabase.getInstance().getReference().child("Users").child(UNumber).child("Chats");
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         conversation_list.setLayoutManager(mLayoutManager);
         conversation_list.setItemAnimator(new DefaultItemAnimator());
-        conversation_list.setAdapter(messageAdapter);
         send_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,12 +83,16 @@ public class ChatActivity extends AppCompatActivity {
                     int hours = calendar.get(Calendar.HOUR_OF_DAY);
                     int minutes = calendar.get(Calendar.MINUTE);
                     int seconds = calendar.get(Calendar.SECOND);
-                    String newTime = hours + ":" + minutes;
+                    String newMinutes = String.valueOf(minutes);
+                    if(String.valueOf(minutes).length() == 1){
+                        newMinutes = "0" + String.valueOf(minutes);
+                    }
+                    String newTime = hours + ":" + newMinutes;
                     Message t= new Message(message.getText().toString().trim(), newTime, UID);
                     message.setText("");
                     HashMap<String, String> completeMessage = new HashMap<>();
                     completeMessage.put("Sender", UNumber);
-                    completeMessage.put("Reciever", MNumber);
+                    completeMessage.put("Receiver", MNumber);
                     completeMessage.put("Message", t.getMessage());
                     completeMessage.put("UID", UID);
                     completeMessage.put("Time", newTime);
@@ -97,12 +101,14 @@ public class ChatActivity extends AppCompatActivity {
                     }else{
                         completeMessage.put("Type", "Message");
                     }
-
+                    HashMap<String, String> recentMessage = new HashMap<>();
+                    recentMessage.put("name",MNumber);
+                    recentMessage.put("message",t.getMessage());
                     messageDatabase.push().setValue(completeMessage);
                     oMessageDatabase.push().setValue(completeMessage);
+                    chatsReference.child(MNumber).setValue(recentMessage);
                     firebaseRecyclerAdapter.notifyDataSetChanged();
                     conversation.add(t);
-                    messageAdapter.notifyDataSetChanged();
                 }
             }
         });
@@ -156,12 +162,12 @@ public class ChatActivity extends AppCompatActivity {
 
         public void msg(Message msg){
 
-            TextView myMessage=(TextView)view.findViewById(R.id.actual_message);
-            TextView mytime = (TextView)view.findViewById(R.id.message_time_stamp);
-            TextView RMessage = (TextView)view.findViewById(R.id.Ractual_message);
-            TextView RmyTime = (TextView)view.findViewById(R.id.Rmessage_time_stamp);
-            CardView myCard = (CardView)view.findViewById(R.id.single_message_card);
-            CardView RCard = (CardView)view.findViewById(R.id.Rsingle_message_card);
+            TextView myMessage= view.findViewById(R.id.actual_message);
+            TextView mytime = view.findViewById(R.id.message_time_stamp);
+            TextView RMessage = view.findViewById(R.id.Ractual_message);
+            TextView RmyTime = view.findViewById(R.id.Rmessage_time_stamp);
+            CardView myCard = view.findViewById(R.id.single_message_card);
+            CardView RCard = view.findViewById(R.id.Rsingle_message_card);
             if(UID == msg.getUID().trim()){
                 myCard.setVisibility(View.GONE);
                 RCard.setVisibility(View.VISIBLE);
