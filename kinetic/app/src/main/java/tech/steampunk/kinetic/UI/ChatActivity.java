@@ -56,7 +56,7 @@ public class ChatActivity extends AppCompatActivity {
         conversation = new ArrayList<>();
         toolbar = findViewById(R.id.chat_activity_toolbar);
         Intent in = getIntent();
-        String name = in.getStringExtra("Name");
+        final String name = in.getStringExtra("Name");
         SharedPreferences preferences = getSharedPreferences("AUTH", MODE_PRIVATE);
         UID = preferences.getString("UID","Default UID");
         final String UNumber = preferences.getString("Number", "Default_User");
@@ -102,7 +102,8 @@ public class ChatActivity extends AppCompatActivity {
                         completeMessage.put("Type", "Message");
                     }
                     HashMap<String, String> recentMessage = new HashMap<>();
-                    recentMessage.put("name",MNumber);
+                    recentMessage.put("name",name);
+                    recentMessage.put("number",MNumber);
                     recentMessage.put("message",t.getMessage());
                     messageDatabase.push().setValue(completeMessage);
                     oMessageDatabase.push().setValue(completeMessage);

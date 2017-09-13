@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
@@ -79,6 +80,15 @@ public class ChatsFragment extends Fragment {
                 @Override
                 protected void populateViewHolder(ACviewHolder viewHolder, final Contact model, int position) {
                     viewHolder.msg(model);
+                    viewHolder.view.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent in = new Intent(getActivity(), ChatActivity.class);
+                            in.putExtra("Name", model.getName());
+                            in.putExtra("Number", model.getNumber());
+                            startActivity(in);
+                        }
+                    });
                 }
             };
             active_chats.setAdapter(firebaseRecyclerAdapter);

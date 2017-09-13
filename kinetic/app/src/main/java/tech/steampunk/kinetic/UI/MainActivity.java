@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(sectionsPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setTabTextColors(getResources().getColor(R.color.Slight_Gray),getResources().getColor(R.color.White));
         ActivityCompat.requestPermissions(MainActivity.this,
                 new String[]{Manifest.permission.READ_CONTACTS},
                 READ_CONTACTS);

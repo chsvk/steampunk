@@ -28,10 +28,10 @@ public class Contact {
 
     }
 
-    public Contact(String name, String message, Boolean constructor){
+    public Contact(String name, String message, String number){
         this.name = name;
         this.message = message;
-        this.constructor = constructor;
+        this.number = number;
     }
 
     public String getName() {
