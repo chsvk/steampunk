@@ -19,6 +19,11 @@ public class Contact {
         this.message = message;
     }
 
+    public Contact(String number, String message, Boolean a) {
+        this.message = message;
+        this.number = number;
+    }
+
     public Contact(String name, String number) {
         this.name = name;
         this.number = number;

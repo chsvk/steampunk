@@ -41,10 +41,11 @@ public class ChatActivity extends AppCompatActivity {
     @BindView(R.id.send_message)ImageView send_button;
     @BindView(R.id.conversation_list)RecyclerView conversation_list;
     private List<Message> conversation;
-    private ConversationAdapter messageAdapter;
     private DatabaseReference messageDatabase;
     private DatabaseReference oMessageDatabase;
     private DatabaseReference chatsReference;
+    private DatabaseReference ochatsReference;
+    private DatabaseReference notificationsReference;
     public static String UID;
     private FirebaseRecyclerAdapter<Message, viewHolder> firebaseRecyclerAdapter;
 
@@ -53,21 +54,28 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
+        Intent in = getIntent();
+
+        SharedPreferences preferences = getSharedPreferences("AUTH", MODE_PRIVATE);
+
         conversation = new ArrayList<>();
         toolbar = findViewById(R.id.chat_activity_toolbar);
-        Intent in = getIntent();
+        setSupportActionBar(toolbar);
         final String name = in.getStringExtra("Name");
-        SharedPreferences preferences = getSharedPreferences("AUTH", MODE_PRIVATE);
         UID = preferences.getString("UID","Default UID");
         final String UNumber = preferences.getString("Number", "Default_User");
         final String MNumber = in.getStringExtra("Number");
-        setSupportActionBar(toolbar);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle(name);
+
         messageDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(UNumber).child("Messages").child(MNumber);
         oMessageDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(MNumber).child("Messages").child(UNumber);
         chatsReference = FirebaseDatabase.getInstance().getReference().child("Users").child(UNumber).child("Chats");
+        ochatsReference = FirebaseDatabase.getInstance().getReference().child("Users").child(MNumber).child("Chats");
+        notificationsReference = FirebaseDatabase.getInstance().getReference().child("Notifications");
+
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         conversation_list.setLayoutManager(mLayoutManager);
         conversation_list.setItemAnimator(new DefaultItemAnimator());
@@ -105,9 +113,22 @@ public class ChatActivity extends AppCompatActivity {
                     recentMessage.put("name",name);
                     recentMessage.put("number",MNumber);
                     recentMessage.put("message",t.getMessage());
+
+                    HashMap<String, String> oRecentMessage = new HashMap<>();
+                    oRecentMessage.put("number", UNumber);
+                    oRecentMessage.put("message", t.getMessage());
+                    oRecentMessage.put("Type", "oRecentMessage");
+
+                    HashMap<String, String> notification = new HashMap<>();
+                    notification.put("Sender", UNumber);
+                    notification.put("Message", t.getMessage());
+
                     messageDatabase.push().setValue(completeMessage);
                     oMessageDatabase.push().setValue(completeMessage);
                     chatsReference.child(MNumber).setValue(recentMessage);
+                    ochatsReference.child(UNumber).setValue(oRecentMessage);
+                    notificationsReference.child(MNumber).push().setValue(notification);
+
                     firebaseRecyclerAdapter.notifyDataSetChanged();
                     conversation.add(t);
                 }
@@ -143,6 +164,7 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 protected void populateViewHolder(viewHolder viewHolder, final Message model, int position) {
                     viewHolder.msg(model);
+                    conversation_list.smoothScrollToPosition(position);
                 }
             };
             conversation_list.setAdapter(firebaseRecyclerAdapter);
@@ -175,7 +197,7 @@ public class ChatActivity extends AppCompatActivity {
                 RMessage.setText(msg.getMessage());
                 RmyTime.setText(msg.getTime());
             }else {
-               RCard.setVisibility(View.GONE);
+                RCard.setVisibility(View.GONE);
                 myCard.setVisibility(View.VISIBLE);
                 myMessage.setText(msg.getMessage());
                 mytime.setText(msg.getTime());

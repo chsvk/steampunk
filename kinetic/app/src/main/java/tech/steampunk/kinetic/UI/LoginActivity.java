@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 
@@ -63,6 +64,7 @@ public class LoginActivity extends Activity {
                                     if(task.isSuccessful()){
                                         FirebaseUser user = mAuth.getCurrentUser();
                                         String uid = user.getUid();
+                                        String token = FirebaseInstanceId.getInstance().getToken();
                                         mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child( "+91" + login.getText().toString().trim()).child("Profile");
                                         HashMap<String, String> userMap = new HashMap<>();
                                         userMap.put("Name", "Default");
@@ -72,6 +74,7 @@ public class LoginActivity extends Activity {
                                         userMap.put("ThumbNail", "Default_Thumb");
                                         userMap.put("Birthday", "Default");
                                         userMap.put("UID", uid);
+                                        userMap.put("DeviceToken", token);
                                         mDatabase.setValue(userMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
@@ -98,10 +101,14 @@ public class LoginActivity extends Activity {
                                                 @Override
                                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                                     if(task.isSuccessful()){
+                                                        String token = FirebaseInstanceId.getInstance().getToken();
+                                                        mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child( "+91" + login.getText().toString().trim()).child("Profile");
+                                                        mDatabase.child("DeviceToken").setValue(token);
                                                         SharedPreferences.Editor editor = getSharedPreferences("AUTH", MODE_PRIVATE).edit();
                                                         editor.putString("Number", "+91" + login.getText().toString().trim());
                                                         editor.putString("UID",mAuth.getCurrentUser().getUid());
                                                         editor.putString("Status", "On The Move, Its Kinetic!");
+                                                        editor.putString("DeviceToken", token);
                                                         editor.apply();
                                                         Toast.makeText(LoginActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
                                                         startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));

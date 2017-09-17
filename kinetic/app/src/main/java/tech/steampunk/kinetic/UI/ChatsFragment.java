@@ -6,16 +6,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
@@ -23,7 +20,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import tech.steampunk.kinetic.R;
 import tech.steampunk.kinetic.data.Contact;
-import tech.steampunk.kinetic.data.Message;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -78,14 +74,16 @@ public class ChatsFragment extends Fragment {
 
             ) {
                 @Override
-                protected void populateViewHolder(ACviewHolder viewHolder, final Contact model, int position) {
+                protected void populateViewHolder(ACviewHolder viewHolder, Contact model, int position) {
                     viewHolder.msg(model);
+                    final String name = model.getName();
+                    final String number = model.getNumber();
                     viewHolder.view.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             Intent in = new Intent(getActivity(), ChatActivity.class);
-                            in.putExtra("Name", model.getName());
-                            in.putExtra("Number", model.getNumber());
+                            in.putExtra("Name", name);
+                            in.putExtra("Number", number);
                             startActivity(in);
                         }
                     });
@@ -111,7 +109,7 @@ public class ChatsFragment extends Fragment {
 
             TextView name= view.findViewById(R.id.chat_name);
             TextView recentMessage = view.findViewById(R.id.chat_recent_message);
-            name.setText(contact.getName());
+            name.setText(contact.getNumber());
             recentMessage.setText(contact.getMessage());
         }
     }
